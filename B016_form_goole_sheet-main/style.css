@@ -1,0 +1,27 @@
+/* style.css */
+
+/* '연락처/이메일' 라벨을 가진 input 태그만 특정해서 스타일 변경 */
+input[aria-label="연락처/이메일"] {
+    background-color: #f4fbf4 !important;
+    border: 2px solid #81c784 !important;
+    border-radius: 10px !important;
+    padding: 15px !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    color: #2e7d32 !important;
+    transition: all 0.3s ease-in-out !important;
+}
+
+/* 입력창을 클릭(포커스)했을 때 테두리와 그림자 효과 */
+input[aria-label="연락처/이메일"]:focus {
+    border-color: #2e7d32 !important;
+    box-shadow: 0 0 12px rgba(129, 199, 132, 0.5) !important;
+    outline: none !important;
+}
+
+/* 힌트 텍스트(placeholder) 색상 변경 */
+input[aria-label="연락처/이메일"]::placeholder {
+    color: #a5d6a7 !important;
+    font-weight: normal !important;
+}

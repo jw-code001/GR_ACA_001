@@ -1,0 +1,84 @@
+정적 페이지(Static Page) 스크래핑에서 가장 중요한 기술은 
+**"내가 원하는 데이터가 담긴 태그를 얼마나 정확하게 집어내느냐"**입니다. 
+
+주로 BeautifulSoup이나 Selenium에서 사용되는 CSS 선택자(CSS Selector) 표현법을 
+중심으로 정리해 드릴게요.
+
+선택 방법,표현법 (Selector),설명
+
+태그명 | "h1, p, div" | 해당 태그를 모두 선택
+클래스(Class) | .item-name | class="item-name"인 요소 선택 (가장 흔함)"
+아이디(ID) | #unique-id | id="unique-id"인 요소 선택 (페이지 내 단 하나)"
+자식/후손 | div > span | div 바로 아래 있는 span만 선택
+속성(Attribute) | a[href*='goods'] | href 속성값에 'goods'가 포함된 모든 링크 선택
+
+#product-list  span.discount
+#product-list  a .discount
+#product-list  [class='discount']
+#product-list > .item > .link > .discount
+#product-list > .item > .link > .name + .price + .discount
+
+#product-list  [class^='discount'] -> 클래스가 discount로 시작하는 객체들 모두 잡아
+#product-list  [class$='discount'] -> 클래스가 discount로 끝나는 객체들 모두 잡아
+#product-list  [class*='discount'] -> 클래스가 discount가 포함되어있는 객체들 
+
+#product-list .link:nth-child(1) .price -> 5,900원 /4,500원 
+#product-list .link:nth-child(2) .price -> 결과없음
+#product-list .link:last-child  .price -> 
+
+img[src$='.jpg'] -> jpg 확장자 이미지 전부 잡아
+
+<div id="product-list">
+    <div class="item active">
+        <a href="/goods/123" class="link">
+            <span class="name">유기농 고구마</span>
+            <span class="price">5,900원</span>
+            <span class="discount">10%</span>
+        </a>
+    </div>
+    <div class="item">
+        <a href="/goods/456" class="link">
+            <span class="name">밤고구마</span>
+            <span class="price">4,500원</span>
+            <span class="discount">5%</span>
+        </a>
+    </div>
+</div>
+    
+🎯 위 구조에서 데이터를 뽑는 다양한 표현법
+상품명 전체 가져오기:
+
+span.name : 클래스가 name인 모든 span 태그
+
+div.item > a > span.name : 계층 구조를 명시하여 정확도 높임
+
+할인 중인 상품만 가져오기:
+
+div.item:has(span.discount) : 할인 정보(span.discount)를 포함하고 있는 상품 아이템만 선택 (일부 라이브러리 지원)
+
+특정 상품 ID가 포함된 링크만 가져오기:
+
+a[href*='/goods/'] : 링크 주소에 '/goods/'가 들어간 모든 <a> 태그
+</div>
+
+
+파이썬 코드
+from bs4 import BeautifulSoup
+
+html_content = """위의 HTML 구조 문자열"""
+soup = BeautifulSoup(html_content, 'html.parser')
+
+# 1. 클래스명으로 찾기 (가장 일반적)
+names = soup.select("span.name")
+for name in names:
+    print(name.get_text())
+
+# 2. 복합 선택자 (아이디 안의 특정 클래스)
+prices = soup.select("#product-list .price")
+for price in prices:
+    print(price.text)
+
+# 3. 속성으로 찾기
+links = soup.select("a[href^='/goods/']") # /goods/로 시작하는 링크
+for link in links:
+    print(link['href'])
